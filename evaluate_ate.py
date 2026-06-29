@@ -1,23 +1,27 @@
 import numpy as np
 
-# Load trajectory and ground truth
 traj = np.loadtxt('KeyFrameTrajectory.txt')
 gt = np.loadtxt('groundtruth.txt')
 
-errors = []
+# Match timestamps
+matched_traj = []
+matched_gt = []
 for t_row in traj:
-    t_time = t_row[0]
-    # Find the row in ground truth with the closest timestamp
-    closest_gt_idx = np.argmin(np.abs(gt[:, 0] - t_time))
-    
-    # Calculate Euclidean distance between estimated (x,y,z) and ground truth (x,y,z)
-    pred_pos = t_row[1:4]
-    true_pos = gt[closest_gt_idx, 1:4]
-    
-    dist = np.linalg.norm(pred_pos - true_pos)
-    errors.append(dist)
+    closest_gt_idx = np.argmin(np.abs(gt[:, 0] - t_row[0]))
+    matched_traj.append(t_row[1:4])
+    matched_gt.append(gt[closest_gt_idx, 1:4])
 
+P = np.array(matched_traj)
+Q = np.array(matched_gt)
+
+# Simple scale alignment factor
+scale = np.mean(np.linalg.norm(Q, axis=1)) / np.mean(np.linalg.norm(P, axis=1))
+P_scaled = P * scale
+
+# Calculate true tracking error
+errors = np.linalg.norm(P_scaled - Q, axis=1)
 rmse = np.sqrt(np.mean(np.square(errors)))
-print(f"\n=== SLAM Accuracy Results ===")
+
+print(f"\n=== Scale-Aligned SLAM Accuracy ===")
 print(f"Absolute Trajectory Error (RMSE): {rmse:.4f} meters")
-print(f"Max Error: {max(errors):.4f} meters")
+print(f"Scale Factor applied: {scale:.2f}x")
