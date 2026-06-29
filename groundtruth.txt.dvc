@@ -1,0 +1,5 @@
+outs:
+- md5: 02a8e339bd48678d2feae87483746eb8
+  size: 164359
+  hash: md5
+  path: groundtruth.txt
