@@ -23,13 +23,16 @@ R = U @ Vt
 if np.linalg.det(R) < 0: R[:, -1] *= -1
 c = np.trace(np.diag(D) @ np.eye(3)) / sigma_X
 t = mu_Y - c * R @ mu_X
+
+# Transpose matrices back to (N, 3) for correct plotting
 X_aligned = (c * R @ X + t).T
+Y_aligned = Y.T
 
 # Plotting
 fig = plt.figure(figsize=(10, 7))
 ax = fig.add_subplot(projection='3d')
 ax.plot(X_aligned[:, 0], X_aligned[:, 1], X_aligned[:, 2], label='ORB-SLAM3 (500 features)', color='blue', linewidth=2)
-ax.plot(Y[:, 0], Y[:, 1], Y[:, 2], label='Ground Truth', color='red', linestyle='--', linewidth=1.5)
+ax.plot(Y_aligned[:, 0], Y_aligned[:, 1], Y_aligned[:, 2], label='Ground Truth', color='red', linestyle='--', linewidth=1.5)
 
 ax.set_xlabel('X (meters)')
 ax.set_ylabel('Y (meters)')
@@ -37,4 +40,4 @@ ax.set_zlabel('Z (meters)')
 plt.title('SLAM Estimated Path vs. Real Ground Truth')
 plt.legend()
 plt.savefig('trajectory_comparison.png', dpi=300)
-print("Success! Comparison plot saved as 'trajectory_comparison.png'")
+print("Success! Fixed comparison plot saved as 'trajectory_comparison.png'")
