@@ -1,0 +1,22 @@
+# Camera 1 (Left Lens) Intrinsics
+Camera1.fx: 500.0  # Project B will replace these placeholders
+Camera1.fy: 500.0
+Camera1.cx: 320.0
+Camera1.cy: 240.0
+
+# Camera 2 (Center Lens) Intrinsics
+Camera2.fx: 501.0
+Camera2.fy: 501.0
+Camera2.cx: 322.0
+Camera2.cy: 238.0
+
+# Extrinsics: Transformation from Camera 2 to Camera 1
+# This matrix includes a 30-degree rotation around the vertical Y-axis
+Camera.T_c1_c2: !!opencv-matrix
+   rows: 4
+   cols: 4
+   dt: d
+   data: [ 0.866,  0.000,  0.500, -0.06,  # 0.06m (6cm) physical baseline shift
+           0.000,  1.000,  0.000,  0.00,
+          -0.500,  0.000,  0.866,  0.00,
+           0.000,  0.000,  0.000,  1.00 ]
