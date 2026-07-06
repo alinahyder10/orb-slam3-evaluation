@@ -1,0 +1,27 @@
+num_seq = 1
+Loading images for sequence 0...LOADED!
+
+-------
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: Stereo
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+*Viewer.KeyFrameSize parameter doesn't exist or is not a real number*
+*Viewer.KeyFrameLineWidth parameter doesn't exist or is not a real number*
+*Viewer.GraphLineWidth parameter doesn't exist or is not a real number*
+*Viewer.PointSize parameter doesn't exist or is not a real number*
+*Viewer.CameraSize parameter doesn't exist or is not a real number*
+*Viewer.CameraLineWidth parameter doesn't exist or is not a real number*
+**ERROR in the config file, the format is not correct**
+terminate called after throwing an instance of 'int'
