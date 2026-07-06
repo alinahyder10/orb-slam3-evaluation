@@ -1,4 +1,7 @@
 %YAML:1.0
+File.version: "1.0"
+
+Camera.type: "PinHole"
 
 # Camera 1 (Left Lens) Intrinsics
 Camera1.fx: 500.0
@@ -12,12 +15,48 @@ Camera2.fy: 501.0
 Camera2.cx: 322.0
 Camera2.cy: 238.0
 
-# Extrinsics
-Camera.T_c1_c2: !!opencv-matrix
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+
+Camera2.k1: 0.0
+Camera2.k2: 0.0
+Camera2.p1: 0.0
+Camera2.p2: 0.0
+
+# Image Resolution
+Camera.width: 640
+Camera.height: 480
+
+# Extrinsics (Changed prefix from Camera. to Stereo.)
+Stereo.T_c1_c2: !!opencv-matrix
    rows: 4
    cols: 4
    dt: d
-   data: [ 0.866,  0.000,  0.500, -0.06,
-           0.000,  1.000,  0.000,  0.00,
-          -0.500,  0.000,  0.866,  0.00,
-           0.000,  0.000,  0.000,  1.00 ]
+   data: [0.866, 0.000, 0.500, -0.06, 0.000, 1.000, 0.000, 0.00, -0.500, 0.000, 0.866, 0.00, 0.000, 0.000, 0.000, 1.00]
+
+# Stereo Thresholds
+Stereo.b: 0.05
+Stereo.ThDepth: 40.0
+
+# Mandatory Pipeline Settings
+Camera.fps: 20
+Camera.RGB: 1
+
+ORBextractor.nFeatures: 1000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0
