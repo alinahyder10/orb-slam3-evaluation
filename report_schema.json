@@ -1,0 +1,21 @@
+{
+  "pipeline_id": "dual_stereo_orb_slam3",
+  "dataset": "MH01_mock",
+  "timestamp": "2026-07-07T15:51:00Z",
+  "metrics": {
+    "trajectory_accuracy": {
+      "ate_rmse_meters": 0.0,
+      "rpe_rmse_meters_per_sec": 0.0,
+      "drift_per_meter_percentage": 0.0
+    },
+    "performance": {
+      "mean_frame_processing_time_ms": 0.0,
+      "max_frame_processing_time_ms": 0.0,
+      "total_execution_time_sec": 0.0
+    },
+    "reliability": {
+      "track_loss_events": 0,
+      "frames_tracked_percentage": 100.0
+    }
+  }
+}
