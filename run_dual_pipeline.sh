@@ -20,18 +20,27 @@ xvfb-run -a $STEREO_EXEC $ORB_VOCAB $CONFIG_RIGHT $DATASET_RIGHT_PATH ./Examples
 RIGHT_PID=$!
 
 echo "Pipelines processing in background..."
-echo "Monitoring process lifecycles..."
+echo "Monitoring logs for trajectory disk writes..."
 echo "---------------------------------------"
 
 # Process watcher loop
 while true; do
-    # Check if both background processes have exited/died
+    # Break early if BOTH logs confirm the trajectory file was written to disk
+    if grep -q "Saving trajectory to" log_pipeline_left.txt && grep -q "Saving trajectory to" log_pipeline_right.txt; then
+        echo "✅ Trajectory data successfully captured from both pipelines."
+        break
+    fi
+    
+    # Fallback safety break if both processes completely crash early
     if ! kill -0 $LEFT_PID 2>/dev/null && ! kill -0 $RIGHT_PID 2>/dev/null; then
-        echo "Pipelines have completed execution."
+        echo "Pipelines stopped unexpectedly."
         break
     fi
     sleep 1
 done
+
+# Force kill the remaining spinning viewer/zombie threads safely
+kill -9 $LEFT_PID $RIGHT_PID 2>/dev/null
 
 echo "Running automated metrics evaluation..."
 python3 evaluate_run.py
