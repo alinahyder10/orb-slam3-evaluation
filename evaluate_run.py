@@ -41,7 +41,7 @@ def parse_slam_logs(log_path, trajectory_path, ground_truth_path):
     report = {
         "pipeline_id": "dual_stereo_orb_slam3",
         "dataset": "MH01_mock",
-        "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "timestamp": datetime.now(datetime.UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "metrics": {
             "trajectory_accuracy": {"ate_rmse_meters": 0.0, "rpe_rmse_meters_per_sec": 0.0, "drift_per_meter_percentage": 0.0},
             "performance": {"mean_frame_processing_time_ms": 0.0, "max_frame_processing_time_ms": 0.0, "total_execution_time_sec": 0.0},
