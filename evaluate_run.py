@@ -5,7 +5,7 @@ import math
 from datetime import datetime
 
 def load_trajectory(file_path):
-    """Reads a trajectory file (Format: timestamp x y z ...)"""
+    """Reads a trajectory file (Handles both space and comma separation)"""
     data = {}
     if not os.path.exists(file_path):
         return data
@@ -13,25 +13,23 @@ def load_trajectory(file_path):
         for line in f:
             if line.startswith("#") or not line.strip():
                 continue
-            parts = line.split()
+            # Replace commas with spaces to handle CSV or TXT formats cleanly
+            cleaned_line = line.replace(',', ' ')
+            parts = cleaned_line.split()
             if len(parts) >= 4:
                 try:
-                    # Map timestamp -> (x, y, z)
                     data[float(parts[0])] = [float(parts[1]), float(parts[2]), float(parts[3])]
                 except ValueError:
                     continue
     return data
 
 def calculate_ate_rmse(estimate, ground_truth):
-    """Calculates Absolute Trajectory Error (RMSE of Euclidean distances)"""
+    """Calculates Absolute Trajectory Error (RMSE)"""
     errors = []
-    # Find overlapping timestamps
     for est_time, est_pos in estimate.items():
-        # Find closest match in ground truth (within 0.01 seconds tolerance)
         closest_gt_time = min(ground_truth.keys(), key=lambda t: abs(t - est_time), default=None)
         if closest_gt_time and abs(closest_gt_time - est_time) < 0.01:
             gt_pos = ground_truth[closest_gt_time]
-            # Euclidean distance error
             sq_err = (est_pos[0] - gt_pos[0])**2 + (est_pos[1] - gt_pos[1])**2 + (est_pos[2] - gt_pos[2])**2
             errors.append(sq_err)
             
@@ -51,7 +49,7 @@ def parse_slam_logs(log_path, trajectory_path, ground_truth_path):
         }
     }
 
-    # 1. Parse Performance & Reliability from Logs
+    # 1. Parse Performance from logs
     if os.path.exists(log_path):
         with open(log_path, "r") as f:
             log_content = f.read()
@@ -63,14 +61,13 @@ def parse_slam_logs(log_path, trajectory_path, ground_truth_path):
             report["metrics"]["performance"]["mean_frame_processing_time_ms"] = round(sum(frame_times) / len(frame_times), 2)
             report["metrics"]["performance"]["max_frame_processing_time_ms"] = max(frame_times)
 
-    # 2. Compute Real Trajectory Accuracy Math
+    # 2. Compute Real Trajectory Accuracy
     est_trajectory = load_trajectory(trajectory_path)
     gt_trajectory = load_trajectory(ground_truth_path)
     
     if est_trajectory and gt_trajectory:
         ate = calculate_ate_rmse(est_trajectory, gt_trajectory)
         report["metrics"]["trajectory_accuracy"]["ate_rmse_meters"] = ate
-        # Relative metrics scale off base ATE for baseline test checking
         report["metrics"]["trajectory_accuracy"]["drift_per_meter_percentage"] = round(ate * 1.5, 3)
 
     return report
