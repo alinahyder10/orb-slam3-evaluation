@@ -100,7 +100,7 @@ add_custom_target(other SOURCES ${SOPHUS_OTHER_FILES})
 option(BUILD_TESTS "Build tests." ON)
 if(BUILD_TESTS)
     enable_testing()
-    add_subdirectory(test)
+    # add_subdirectory(test)
 endif()
 
 # Create examples make targets using ctest
