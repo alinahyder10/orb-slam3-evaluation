@@ -1,20 +1,25 @@
-# ORB-SLAM3 Optimization & Evaluation Project
+# Multi-Camera SLAM Benchmarking Pipeline
 
-This repository contains the setup, execution, and accuracy evaluation of the ORB-SLAM3 pipeline running on the TUM RGB-D dataset sequence (`rgbd_dataset_freiburg1_desk2`).
+This repository contains an automated benchmarking framework for evaluating visual SLAM performance on physical hardware. Originally designed to tune ORB-SLAM3 on offline TUM RGB-D datasets, the project has evolved into a "Benchmarking Machine" capable of running three parallel monocular camera feeds (live or via ROS2 bags) and automatically scoring them against LiDAR or high-accuracy hardware ground truth.
 
-## Benchmark Results (Week 2)
+## The Benchmarking Pipeline
 
-We optimized the system performance by tuning the feature extraction count in `TUM1.yaml`.
-
-| Configuration | Median Tracking Time | Absolute Trajectory Error (RMSE) | Scale Factor |
-| :--- | :--- | :--- | :--- |
-| **Default (1000 Features)** | 0.0158 sec | 0.1885 meters | 0.58x |
-| **Optimized (500 Features)** | 0.0148 sec | 0.0367 meters | 1.11x |
-
-### Key Takeaway
-Reducing the target features to 500 decreased processing time per frame and drastically improved tracking accuracy (from ~18.8 cm down to **3.67 cm**). Tracking fewer, higher-quality features helped the engine avoid noisy background points.
+The system handles the entire evaluation workflow seamlessly:
+1. **Data Ingestion:** Takes in live ROS2 topics (e.g., `/zed2i/zed_node/.../image_rect_color`) or pre-recorded ROS2 bags from the physical scanner.
+2. **Parallel SLAM Execution:** Runs three isolated instances of ORB-SLAM3 simultaneously in subdirectories to prevent file overwrites, tracking left, right, and center camera feeds.
+3. **Automated Formatting:** Gracefully catches shutdown signals, extracts trajectories, and automatically scales ORB-SLAM3's nanosecond timestamps to standard Unix seconds.
+4. **evo Integration:** Bypasses manual alignment scripts by natively calling `evo` (`evo_ape`) via subprocesses to calculate the Absolute Trajectory Error (RMSE) against the ground truth.
+5. **Consolidated Reporting:** Generates a comprehensive `final_report.json` containing positional accuracy, track loss events, and processing times for all three cameras simultaneously.
 
 ## Project Structure
-* `plot_path.py`: Python script utilizing the Umeyama algorithm for 3D alignment and plotting.
-* `evaluate_ate.py`: Evaluation script computing the Absolute Trajectory Error (RMSE).
-* `trajectory_comparison.png`: 3D visual plot overlaying SLAM tracking against real ground truth.
+
+* **`run_benchmarks.sh`**: The master execution script. Launches the 3-camera nodes, handles graceful `SIGINT` shutdowns for live feeds to ensure data is written to disk, renames output files, and triggers the Python evaluator.
+* **`evaluate_run.py`**: A dynamic Python evaluation script utilizing `argparse`. It ingests multiple camera logs and trajectories, aligns them with the single ground truth, fixes timestamp scales, and compiles the metrics JSON.
+* **Legacy Scripts**: `plot_path.py` and `evaluate_ate.py` (custom Umeyama/RMSE scripts) have been deprecated and replaced by the robust `evo` package.
+
+## Usage
+
+Run the master benchmarking script by passing your LiDAR or hardware ground truth (`.tum`) file as the single argument:
+
+```bash
+./run_benchmarks.sh /path/to/latest_scan_lidar_gt.tum
